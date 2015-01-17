@@ -1,0 +1,9 @@
+{
+  "name": "tictactoe",
+  "version": "0.0.1",
+  "description": "tic tac toe",
+  "dependencies": {
+    "socket.io": "~0.9.6",
+    "express": "~4.0.0"
+  }
+}

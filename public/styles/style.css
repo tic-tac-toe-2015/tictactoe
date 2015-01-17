@@ -1,0 +1,6 @@
+#output {
+    position: absolute;
+    left: 500px;
+    top: 100px;
+    font-family: monospace;
+}
