@@ -18,19 +18,22 @@
     var socket = io.connect();
 
     var main = function () {
-        $("#click").click(function () {
+        $("#buttonId").click(function () {
             console.log("The paragraph was clicked.");
 
             socket.emit('message', 'server, how are you?');
         });
     }
 
+    socket.on('sendPrivateMsg', function (data) {
+        alert(JSON.stringify(data));
+    });
     $(document).ready(main);
 </script>
 <body onload="init()">
 <div id="output">hint</div>
 <div>
-    <button type="button" id="click">Click Me!</button>
+    <button type="button" id="buttonId">Click Me!</button>
 </div>
 </body>
 </html>
