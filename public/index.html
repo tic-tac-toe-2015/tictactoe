@@ -8,16 +8,20 @@
             src="/scripts/simpleGame.js"></script>
     <script type="text/javascript"
             src="/scripts/app.js"></script>
-
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
 
 </head>
 <script src="/socket.io/socket.io.js"></script>
+
 <script>
     var socket = io.connect();
+    $(document).ready(main);
 </script>
 <body onload="init()">
 
 <div id="output">hint</div>
+<button type="button" id="click">Click Me!</button>
+
 </body>
 </html>
 

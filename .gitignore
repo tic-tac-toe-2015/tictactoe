@@ -4,3 +4,4 @@ kopieS.js
 node_modules
 lib/chat_server.js
 public/icons
+bower_components

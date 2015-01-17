@@ -200,3 +200,10 @@ function update() {
     } // end if
 
 } // end update
+
+
+var main = function () {
+    $("#click").click(function () {
+        console.log("The paragraph was clicked.");
+    });
+}
