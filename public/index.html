@@ -14,14 +14,24 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
+
     var socket = io.connect();
+
+    var main = function () {
+        $("#click").click(function () {
+            console.log("The paragraph was clicked.");
+
+            socket.emit('message', 'server, how are you?');
+        });
+    }
+
     $(document).ready(main);
 </script>
 <body onload="init()">
-
 <div id="output">hint</div>
-<button type="button" id="click">Click Me!</button>
-
+<div>
+    <button type="button" id="click">Click Me!</button>
+</div>
 </body>
 </html>
 

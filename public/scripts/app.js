@@ -1,5 +1,4 @@
 
-
 var game;
 var cells;
 var boardSprite;
@@ -201,9 +200,3 @@ function update() {
 
 } // end update
 
-
-var main = function () {
-    $("#click").click(function () {
-        console.log("The paragraph was clicked.");
-    });
-}
