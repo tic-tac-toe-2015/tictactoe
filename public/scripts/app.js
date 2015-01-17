@@ -1,3 +1,4 @@
+
 var game;
 var cells;
 var boardSprite;
@@ -11,7 +12,6 @@ var winningCombos;
 
 var playerName;
 var cellRank;
-var tCell;
 
 function Cell() {
     tCell = new Sprite(game, "images/blank.png", 100, 100);
@@ -55,26 +55,7 @@ function buildCells() {
 
 function updateCells() {
     for (i = 0; i < cells.length; i++) {
-
-        if (cells[i].isClicked()) {
-
-            if (this.isClicked()) {
-                if (this.state == BLANK) {
-                    this.state = currentPlayer;
-                    this.setImage(this.images[currentPlayer]);
-
-                    //change the player
-                    if (currentPlayer == X) {
-                        currentPlayer = O;
-                    } else {
-                        currentPlayer = X;
-                    } // end if
-                } // end if
-            } // end if
-
-        }
-
-        /*  cells[i].checkClick();*/
+        cells[i].checkClick();
         cells[i].update();
     } // end for loop
 } // end updateCells
@@ -218,6 +199,3 @@ function update() {
     } // end if
 
 } // end update
-
-window.addEventListener('load', init);
-
