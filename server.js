@@ -29,4 +29,5 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Something broke!');
 });
 
-
+var gameServer = require('./lib/game_server');
+gameServer.listen(server);

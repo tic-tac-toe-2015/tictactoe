@@ -2,5 +2,5 @@
 tictactoe.iml
 kopieS.js
 node_modules
-lib
+lib/chat_server.js
 public/icons
