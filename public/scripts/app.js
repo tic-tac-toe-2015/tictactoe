@@ -1,3 +1,7 @@
+/*
+ Main code and design: Andy Harris - 2011/2012
+ //frontend taken from : http://aharrisbooks.net/h5g/h5g_13/tictactoe/tttAI.html
+ */
 
 var game;
 var cells;

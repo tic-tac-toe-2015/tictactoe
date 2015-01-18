@@ -19,16 +19,17 @@
 
     var main = function () {
         $("#buttonId").click(function () {
-            console.log("The paragraph was clicked.");
-
+            console.log("The button was clicked.");
             socket.emit('message', 'server, how are you?');
         });
     }
 
     socket.on('sendPrivateMsg', function (data) {
-        alert(JSON.stringify(data));
+        alert('Server answers: ' + data.answer);
     });
+
     $(document).ready(main);
+
 </script>
 <body onload="init()">
 <div id="output">hint</div>
