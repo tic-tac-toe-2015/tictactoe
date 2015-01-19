@@ -1,4 +1,4 @@
-// frontend taken from: http://www.zeewe.com/blog/html5-canvas-demo-tictactoe/
+// Frontend based on : http://www.zeewe.com/blog/html5-canvas-demo-tictactoe/
 var xBoard = 0;
 var oBoard = 0;
 var begin = true;
@@ -39,7 +39,7 @@ function paintBoard() {
         begin = true;
     }
 
-    board.addEventListener('click', function (event) {
+    board.addEventListener('click', function () {
         console.log("The canvas was clicked.");
         socket.emit('canvasMessage', 'server, i have clicked the canvas?');
 

@@ -14,10 +14,6 @@
 
     var socket = io.connect();
 
-    socket.on('sendPrivateMsg', function (data) {
-        alert('Server answers: ' + data.answer);
-    });
-
     socket.on('answerCanvas', function (data) {
         alert('Server answers: ' + data.answer);
     });
