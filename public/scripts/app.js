@@ -1,206 +1,263 @@
-/*
- Main code and design: Andy Harris - 2011/2012
- //frontend taken from : http://aharrisbooks.net/h5g/h5g_13/tictactoe/tttAI.html
- */
+// frontend taken from: http://www.zeewe.com/blog/html5-canvas-demo-tictactoe/
+var xBoard = 0;
+var oBoard = 0;
+var begin = true;
+var context;
+var width, height;
 
-var game;
-var cells;
-var boardSprite;
-var output;
-var currentPlayer = 1;
+function paintBoard() {
+    var board = document.getElementById('board');
 
-var BLANK = 0;
-var X = 1;
-var O = 2;
-var winningCombos;
+    width = board.width;
+    height = board.height;
+    context = board.getContext('2d');
 
-var playerName;
-var cellRank;
+    context.beginPath();
+    context.strokeStyle = '#000';
+    context.lineWidth = 4;
 
-function Cell() {
-    tCell = new Sprite(game, "images/blank.png", 100, 100);
-    tCell.setSpeed(0);
-    tCell.state = BLANK;
+    context.moveTo((width / 3), 0);
+    context.lineTo((width / 3), height);
 
-    tCell.images = new Array("images/blank.png", "images/X.png", "images/O.png");
+    context.moveTo((width / 3) * 2, 0);
+    context.lineTo((width / 3) * 2, height);
 
-    tCell.checkClick = function () {
-        if (this.isClicked()) {
-            if (this.state == BLANK) {
-                this.state = currentPlayer;
-                this.setImage(this.images[currentPlayer]);
+    context.moveTo(0, (height / 3));
+    context.lineTo(width, (height / 3));
 
-                //change the player
-                if (currentPlayer == X) {
-                    currentPlayer = O;
-                } else {
-                    currentPlayer = X;
-                } // end if
-            } // end if
-        } // end if
-    } // end checkClick
+    context.moveTo(0, (height / 3) * 2);
+    context.lineTo(width, (height / 3) * 2);
 
-    return tCell;
-} // end cell
+    context.stroke();
+    context.closePath();
 
-function buildCells() {
-    cells = new Array(9);
-    xOffset = 100;
-    yOffset = 100;
-    for (i = 0; i < cells.length; i++) {
-        cells[i] = new Cell();
-        row = parseInt(i / 3);
-        col = i % 3;
-        xPos = (col * 100) + xOffset;
-        yPos = (row * 100) + yOffset;
-        cells[i].setPosition(xPos, yPos);
-    } // end for loop
-} // end buildCells
+    if (begin) {
+        var ini = Math.abs(Math.floor(Math.random() * 9 - 0.1));
+        markBit(1 << ini, 'O');
+        begin = false;
+    } else {
+        begin = true;
+    }
 
-function updateCells() {
-    for (i = 0; i < cells.length; i++) {
-        cells[i].checkClick();
-        cells[i].update();
-    } // end for loop
-} // end updateCells
+    board.addEventListener('click', function (event) {
+        console.log("The canvas was clicked.");
+        socket.emit('canvasMessage', 'server, i have clicked the canvas?');
 
-function setupData() {
-    winningCombos = new Array(
-        new Array(0, 1, 2),
-        new Array(3, 4, 5),
-        new Array(6, 7, 8),
-        new Array(0, 3, 6),
-        new Array(1, 4, 7),
-        new Array(2, 5, 8),
-        new Array(0, 4, 8),
-        new Array(2, 4, 6)
-    );
+    });
+}
 
+function checkWinner(board) {
 
-    playerName = new Array("none", "X", "O");
+    var result = false;
 
-} // end setupData();
+    if (((board | 0x1C0) == board) || ((board | 0x38 ) == board) ||
+        ((board | 0x7) == board) || ((board | 0x124) == board) ||
+        ((board | 0x92) == board) || ((board | 0x49) == board) ||
+        ((board | 0x111) == board) || ((board | 0x54) == board)) {
 
-function checkWins() {
-    winner = 0
-    for (combo = 0; combo < winningCombos.length; combo++) {
-        a = winningCombos[combo][0];
-        b = winningCombos[combo][1];
-        c = winningCombos[combo][2];
+        result = true;
+    }
+    return result;
+}
 
-        if (cells[a].state == cells[b].state) {
-            if (cells[b].state == cells[c].state) {
-                if (cells[a].state != BLANK) {
-                    winner = cells[a].state;
-                } // end if
-            } // end if
-        } // end if
-    } // end for
-    return winner;
-} // end checkWins
+function paintX(x, y) {
 
-function showBest() {
-    // use a heuristic algorithm to determine the best play
+    context.beginPath();
 
-    //initial rank based on number of winning combos
-    //that go through the cell
-    cellRank = new Array(3, 2, 3, 3, 4, 3, 3, 2, 3);
+    context.strokeStyle = '#ff0000';
+    context.lineWidth = 4;
 
-    //demote any cells already taken
-    for (i = 0; i < cells.length; i++) {
-        if (cells[i].state != BLANK) {
-            cellRank[i] -= 99;
-        } // end if
-    } // end for
+    var offsetX = (width / 3) * 0.1;
+    var offsetY = (height / 3) * 0.1;
 
-    //look for partially completed combos
-    for (combo = 0; combo < winningCombos.length; combo++) {
-        a = winningCombos[combo][0];
-        b = winningCombos[combo][1];
-        c = winningCombos[combo][2];
+    var beginX = x * (width / 3) + offsetX;
+    var beginY = y * (height / 3) + offsetY;
 
-        //if any two cells in a combo are
-        //non-blank and the same value,
-        //promote the remaining cell
+    var endX = (x + 1) * (width / 3) - offsetX * 2;
+    var endY = (y + 1) * (height / 3) - offsetY * 2;
 
-        if (cells[a].state == cells[b].state) {
-            if (cells[a].state != BLANK) {
-                if (cells[c].state == BLANK) {
-                    cellRank[c] += 10;
-                } // end if
-            } // end if
-        } // end if
+    context.moveTo(beginX, beginY);
+    context.lineTo(endX, endY);
 
-        if (cells[a].state == cells[c].state) {
-            if (cells[a].state != BLANK) {
-                if (cells[b].state == BLANK) {
-                    cellRank[b] += 10;
-                } // end if
-            } // end if
-        } // end if
+    context.moveTo(beginX, endY);
+    context.lineTo(endX, beginY);
 
-        if (cells[b].state == cells[c].state) {
-            if (cells[b].state != BLANK) {
-                if (cells[a].state == BLANK) {
-                    cellRank[a] += 10;
-                } // end if
-            } // end if
-        } // end if
+    context.stroke();
+    context.closePath();
+}
 
+function paintO(x, y) {
 
-    } // end for
+    context.beginPath();
 
-    //print current cellRank
-    hint = cellRank[0] + " " + cellRank[1] + " " + cellRank[2] + "<br />";
-    hint += cellRank[3] + " " + cellRank[4] + " " + cellRank[5] + "<br />";
-    hint += cellRank[6] + " " + cellRank[7] + " " + cellRank[8] + "<br />";
+    context.strokeStyle = '#0000ff';
+    context.lineWidth = 4;
 
-    //determine the best move to make
-    bestCell = -1;
-    highest = -999;
+    var offsetX = (width / 3) * 0.1;
+    var offsetY = (height / 3) * 0.1;
 
-    //step through cellRank to find the best available score
-    for (i = 0; i < cells.length; i++) {
-        if (cellRank[i] > highest) {
-            highest = cellRank[i];
-            bestCell = i
-        } // end if
-    } // end for
+    var beginX = x * (width / 3) + offsetX;
+    var beginY = y * (height / 3) + offsetY;
 
-    hint += "HINT: cell # " + bestCell;
+    var endX = (x + 1) * (width / 3) - offsetX * 2;
+    var endY = (y + 1) * (height / 3) - offsetY * 2;
 
-    output.innerHTML = hint;
+    context.arc(beginX + ((endX - beginX) / 2), beginY + ((endY - beginY) / 2), (endX - beginX) / 2, 0, Math.PI * 2, true);
 
+    context.stroke();
+    context.closePath();
+}
 
-} // end showBest
+function clickHandler(e) {
 
-function init() {
-    game = new Scene();
-    game.setBG("blue");
-    game.setSize(400, 400);
+    var y = Math.floor(e.clientY / (height / 3));
+    var x = Math.floor(e.clientX / (width / 3));
 
-    output = document.getElementById("output");
+    var bit = (1 << x + ( y * 3 ));
 
-    boardSprite = new Sprite(game, "images/board.png", 300, 300);
-    boardSprite.setSpeed(0);
-    boardSprite.setPosition(200, 200);
+    if (isEmpty(xBoard, oBoard, bit)) {
 
-    buildCells();
-    setupData();
+        markBit(bit, 'X')
 
-    game.start();
-} // end init
+        if (!checkNobody()) {
+            if (checkWinner(xBoard)) {
 
-function update() {
-    game.clear();
-    boardSprite.update();
-    updateCells();
-    showBest();
-    winner = checkWins();
-    if (winner != 0) {
-        alert("Player " + playerName[winner] + " wins!");
-        document.location.href = "";
-    } // end if
+                alert('You win!!');
+                restart();
 
-} // end update
+            } else {
 
+                play();
+                if (!checkNobody()) {
+
+                    if (checkWinner(oBoard)) {
+                        alert('Loser!!');
+                        restart();
+                    }
+                }
+            }
+        }
+    }
+}
+
+function checkNobody() {
+    if ((xBoard | oBoard) == 0x1FF) {
+        alert('Nobody won!!');
+        restart();
+        return true;
+    }
+    return false;
+}
+
+function restart() {
+    context.clearRect(0, 0, width, height);
+    xBoard = 0;
+    oBoard = 0;
+    paintBoard();
+}
+
+function isEmpty(xBoard, oBoard, bit) {
+    return (((xBoard & bit) == 0) && ((oBoard & bit) == 0));
+}
+
+function simulate(oBoard, xBoard) {
+
+    var ratio = 0;
+
+    var bit = 0;
+    for (var i = 0; i < 9; i++) {
+
+        var cBit = 1 << i;
+
+        if (isEmpty(xBoard, oBoard, cBit)) {
+
+            if (checkWinner(oBoard | cBit)) {
+                bit = cBit;
+                break;
+            } else if (checkWinner(xBoard | cBit)) {
+                bit = cBit;
+            }
+        }
+    }
+
+    if (bit == 0) {
+        for (var i = 0; i < 9; i++) {
+            var cBit = 1 << i;
+
+            if (isEmpty(xBoard, oBoard, cBit)) {
+                var result = think(oBoard, xBoard, 'X', 0, 1)
+                if (ratio == 0 || ratio < result) {
+                    ratio = result;
+                    bit = cBit;
+                }
+            }
+        }
+    }
+    return bit;
+}
+
+function think(oBoard, xBoard, player, bit, ratio) {
+
+    if (player == 'O') {
+        oBoard = oBoard | bit;
+    } else {
+        xBoard = xBoard | bit;
+    }
+
+    if (checkWinner(oBoard)) {
+        ratio *= 1.1;
+        return ratio;
+
+    } else if (checkWinner(xBoard)) {
+
+        ratio *= 0.7;
+        return ratio;
+
+    } else {
+        var best = 0;
+        ratio *= 0.6;
+
+        for (var i = 0; i < 9; i++) {
+
+            if (isEmpty(xBoard, oBoard, 1 << i)) {
+
+                var newRatio = think(oBoard, xBoard, player == 'O' ? 'X' : 'O', 1 << i, ratio);
+
+                if (best == 0 || best < newRatio) {
+                    best = newRatio;
+                }
+            }
+        }
+
+        return best;
+    }
+}
+
+function markBit(markBit, player) {
+
+    var bit = 1;
+    var posX = 0, posY = 0;
+
+    while ((markBit & bit) == 0) {
+        bit = bit << 1;
+        posX++;
+        if (posX > 2) {
+            posX = 0;
+            posY++;
+        }
+    }
+
+    if (player == 'O') {
+        oBoard = oBoard | bit;
+        paintO(posX, posY);
+    } else {
+        xBoard = xBoard | bit;
+        paintX(posX, posY);
+    }
+}
+
+function play() {
+    var bestBit = simulate(oBoard, xBoard);
+    markBit(bestBit, 'O');
+
+}

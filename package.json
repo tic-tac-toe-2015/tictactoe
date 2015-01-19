@@ -4,6 +4,7 @@
   "description": "tic tac toe 2015",
   "dependencies": {
     "socket.io": "~1.0.0",
-    "express": "~4.10.0"
+    "express": "~4.10.0",
+    "mime": "~1.0.0"
   }
 }

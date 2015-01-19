@@ -1,11 +1,8 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>tictactoe.html</title>
     <link rel="stylesheet" type="text/css" href="styles/style.css">
-    <script type="text/javascript"
-            src="/scripts/simpleGame.js"></script>
     <script type="text/javascript"
             src="/scripts/app.js"></script>
     <script src="../bower_components/jquery/dist/jquery.js"></script>
@@ -17,26 +14,17 @@
 
     var socket = io.connect();
 
-    var main = function () {
-        $("#buttonId").click(function () {
-            console.log("The button was clicked.");
-            socket.emit('message', 'server, how are you?');
-        });
-    }
-
     socket.on('sendPrivateMsg', function (data) {
         alert('Server answers: ' + data.answer);
     });
 
-    $(document).ready(main);
+    socket.on('answerCanvas', function (data) {
+        alert('Server answers: ' + data.answer);
+    });
+
 
 </script>
-<body onload="init()">
-<div id="output">hint</div>
-<div>
-    <button type="button" id="buttonId">Click Me!</button>
-</div>
+<body onload="javascript: paintBoard();">
+<canvas width="500" height="500" id="board" onclick="javascript: clickHandler(event);"></canvas>
 </body>
 </html>
-
-
